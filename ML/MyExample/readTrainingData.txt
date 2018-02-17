@@ -1,0 +1,18 @@
+Training Data contains 4 classes
+***1st column and last column is corrupted***
+
+BAAKI 3 column(2,3,4) MAI KHEL HAI
+
+class 1 mai mostly all three columns(2,3,4) 28 k range mai hai
+
+class 2 mai mostly 3rd column 50+ range mai hai
+
+class 3 mai mostly 2th coulmn 50+ range mai hai
+
+class 4 mai mostly 4th column 50+ range mai hai
+
+
+
+****** time series **********   <------ isk neeche k values usss class k samples hai
+
+
