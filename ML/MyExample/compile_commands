@@ -1,2 +1,2 @@
-td=c++11 -c kk.cpp `pkg-config --cflags --libs gtk+-2.0` -I/usr/local/include
-g++ kk.o -o kk -I/usr/local/include -L/usr/local/lib -lgrt `pkg-config --cflags --libs gtk+-2.0`
+g++ -std=c++11 -c  -g gr_ml.cpp `pkg-config --cflags --libs gtk+-2.0` -I/usr/local/include
+g++ gr_ml.o -o gr_ml -I/usr/local/include -L/usr/local/lib -lgrt `pkg-config --cflags --libs gtk+-2.0`
