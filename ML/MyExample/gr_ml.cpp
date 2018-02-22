@@ -27,7 +27,7 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define PORT_NO 4000
 #define IP_ADDRESS  localhost
-
+#define DIMENSION 3
 
 void readport(void);
 void openport(void);
@@ -148,7 +148,7 @@ void setup()
     record = false;
     
     //The input to the training data will be the [x y] from the mouse, so we set the number of dimensions to 2
-    trainingData.setNumDimensions( 5 );
+    trainingData.setNumDimensions( DIMENSION );
     
     //Initialize the DTW classifier
     DTW dtw;
@@ -274,7 +274,25 @@ void readSocketData(gpointer data, gint readWrite, GdkInputCondition cond)
      {
 	record=!record;
 	if( !record ){
-		
+		//char * buff = buffer;
+		stringstream ss(buffer);
+		string className,finalClassName;
+		string temp;
+		int found;
+    		while (!ss.eof()) {
+ 
+        		/* extracting word by word from stream */
+        		ss >> temp;
+ 
+        		/* Checking the given word is integer or not */
+        		if (stringstream(temp) >> found)
+            		cout << found << " ";
+ 
+        		/* To save from space at the end of string */
+        		temp = "";
+    		}		
+		trainingClassLabel=found;	
+		cout<<"CLASS NAME:"<<trainingClassLabel<<endl;	
 		cout<<"stopped recording"<<endl;
 		cout<<"adding sample"<<endl;
 		timeseries.print(" ");
@@ -298,7 +316,10 @@ void readSocketData(gpointer data, gint readWrite, GdkInputCondition cond)
 	cout<<"File Saved";
      }
      else if(buffer[0]=='l')
-	{trainingData.loadDatasetFromFile("TrainingData.txt");}
+	{
+		trainingData.loadDatasetFromFile("TrainingData.txt");
+		cout<<"CLASSNAME:"<<trainingData.getClassNameForCorrespondingClassLabel(1);
+	}
 	else if(buffer[0]=='[')
 	{trainingClassLabel++;}
 	else if(buffer[0]==']')
@@ -320,7 +341,6 @@ gboolean getArduinoData(gpointer data)
 	//file = fopen( "zname.txt", "w+" );	
 
          //       std::cout<<"getArduinoData"<<"\n";
-
                 char buff[100]; 
   		n = read(fd, buff, 100);
 //		fcntl(fd,F_SETFL,0);
@@ -339,6 +359,7 @@ gboolean getArduinoData(gpointer data)
   		double d=0.0;
   		while(ss>>d)
   		{       
+		
 			vec.push_back(d);
 			if( ss.peek()==','|| ss.peek()==' ')
 			{
@@ -349,7 +370,7 @@ gboolean getArduinoData(gpointer data)
 		{
 		cout<<"RECORD: "<<record<< " " << vec.size()<<"\n";
 		}
-  		if(record && vec.size()==5)
+  		if(record && vec.size()==DIMENSION)
  		 {
 			cout<<"Recording Data"<<endl;
 			for(auto &a:vec)
@@ -359,7 +380,7 @@ gboolean getArduinoData(gpointer data)
 			cout<<endl;
      			timeseries.push_back( vec );
  		 }
-		else if(pipeline.getTrained()&&vec.size()==5)
+		else if(pipeline.getTrained()&&vec.size()==DIMENSION)
 		{	
 			pipeline.predict( vec );
 			double lh = pipeline.getMaximumLikelihood();
