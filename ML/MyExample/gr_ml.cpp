@@ -9,25 +9,25 @@
 #include <string.h>
 #include <errno.h>        
 #include <stdlib.h> 
-#include<unistd.h>
+#include <unistd.h>
 #include <sstream>
-#include<stdlib.h>
-#include<thread>
-#include<pthread.h>
-#include<chrono>
+#include <stdlib.h>
+#include <thread>
+#include <pthread.h>
+#include <chrono>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <curl/curl.h>
 
 #define BAUDRATE B9600 
 #define MODEMDEVICE "/dev/ttyACM0"/*UART NAME IN PROCESSOR*/
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
-#define PORT_NO 4000
+#define PORT_NO 2000
 #define IP_ADDRESS  localhost
-#define DIMENSION 3
+#define DIMENSION 4
 
 void readport(void);
 void openport(void);
@@ -49,6 +49,8 @@ UINT trainingClassLabel;                                //This will hold the cur
 string infoText;                                        //This string will be used to draw some info messages to the main app window
 
 VectorDouble vec;
+CURL* myHandle;
+CURLcode result; // We’ll store the result of CURL’s webpage retrieval, for simple error checking.
 
 int newfd;
 int sockfd;
@@ -65,6 +67,7 @@ void error(const char *msg)
 
 int socket_func()
 {
+     cout<<"TRYING to CONNECT";
      int sockfd, newsockfd, portno;
      socklen_t clilen;
      char buffer[256];
@@ -83,6 +86,7 @@ int socket_func()
               error("ERROR on binding");
      listen(sockfd,5);
      clilen = sizeof(cli_addr);
+     cout << "CONNECTED"<<endl;
      return sockfd;
      //newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
      //if (newsockfd < 0)
@@ -138,6 +142,18 @@ void openport(void)
 
 }
 
+
+static void setupCurl()
+{
+	myHandle = curl_easy_init();
+	curl_easy_setopt(myHandle, CURLOPT_USERAGENT, "Mozilla/4.0");
+	curl_easy_setopt(myHandle, CURLOPT_AUTOREFERER, 1 );
+	curl_easy_setopt(myHandle, CURLOPT_FOLLOWLOCATION, 1 );
+	curl_easy_setopt(myHandle, CURLOPT_COOKIEFILE, "");
+}
+
+
+
 void setup()
 {
 	//ofSetFrameRate(30);
@@ -170,7 +186,6 @@ void setup()
     //Add the classifier to the pipeline (after we do this, we don't need the DTW classifier anymore)
     pipeline.setClassifier( dtw );
 
-    
 }
 /* This is a callback function. The data arguments are ignored
  * in this example. More on callbacks below. */
@@ -252,7 +267,7 @@ void readSocketData(gpointer data, gint readWrite, GdkInputCondition cond)
      socklen_t clilen;
      struct sockaddr_in cli_addr;
      clilen = sizeof(cli_addr);
-//	cout<<"read from soceyt";
+	cout<<"read from soceyt";
     if( !fcntl(newfd, F_GETFD))
     {
         std::cout<<"opened new fd"<<newfd<<"\n";
@@ -335,6 +350,23 @@ void readSocketData(gpointer data, gint readWrite, GdkInputCondition cond)
      //close(sockfd);
      //return true;
 }
+
+static void postPrediction(int classLabel)
+{
+	curl_easy_setopt(myHandle, CURLOPT_REFERER, "http://localhost/demo");
+// Next we tell LibCurl what HTTP POST data to submit
+        
+        
+        std::string data=std::to_string(classLabel);
+	curl_easy_setopt(myHandle, CURLOPT_POSTFIELDS, data.c_str());
+	CURLcode res=curl_easy_perform( myHandle );
+//	if(res!=CURLE_OK)
+		//cout<<"gandla chaila";
+	//else
+		//cout<<"KADAK";
+}
+
+
 gboolean getArduinoData(gpointer data)
 { 
    // readport();
@@ -366,9 +398,9 @@ gboolean getArduinoData(gpointer data)
 				ss.ignore(1);
 			}
   		}
-		if(record)
+		if(record || pipeline.getTrained())
 		{
-		cout<<"RECORD: "<<record<< " " << vec.size()<<"\n";
+		//cout<<"RECORD: "<<record<< " " << vec.size()<<"\n";
 		}
   		if(record && vec.size()==DIMENSION)
  		 {
@@ -381,15 +413,20 @@ gboolean getArduinoData(gpointer data)
      			timeseries.push_back( vec );
  		 }
 		else if(pipeline.getTrained()&&vec.size()==DIMENSION)
-		{	
+		{
 			pipeline.predict( vec );
 			double lh = pipeline.getMaximumLikelihood();
 			if(lh>0.75)
 			{
-			std::cout<<"CLass:"<<pipeline.getPredictedClassLabel()<<std::endl;
-			std::cout<<"Likelyhood"<<lh<<std::endl;
+                                int predictedClassLabel=pipeline.getPredictedClassLabel();
+				std::cout<<"CLass:"<<predictedClassLabel<<std::endl;
+				std::cout<<"Likelyhood"<<lh<<std::endl;
+                                postPrediction(predictedClassLabel);
 			
 			}
+			//cout<<"PREDICTING";	
+     			//n = write(newfd,"hello",5);
+     			//if (n < 0) error("ERROR writing to socket");
 		}
 		vec.clear();	
   		//this_thread::sleep_for(chrono::milliseconds(200));
@@ -416,6 +453,8 @@ int main( int   argc,
     setup();
     openport();
     sockfd=socket_func();
+    setupCurl();
+   postPrediction(2);
     /* This is called in all GTK applications. Arguments are parsed
      * from the command line and are returned to the application. */
     gtk_init (&argc, &argv);
