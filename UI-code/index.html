@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Grayscale - Start Bootstrap Theme</title>
+    <title>Gest Talk!!</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -108,7 +108,10 @@
 	    </div>
 	    <div class="content-section text-left child" id="child2">
 		<h4 class="text-left">Input</h4>
-		<label id="input-label">Label: </label><input type="text" name="input">
+		<form>
+		<label id="input-label">Label: </label><input type="text" id="input_label" name="input" required>
+		<input id="input_submit" type="submit" value="submit"> 
+		</form>
 		<br/>
 		<br/>
 			<!-- Rounded switch -->
@@ -116,7 +119,7 @@
 		 <input type="checkbox">
 		 <span class="slider round"></span>
 		</label>
-		<input type="reset" value="Reset">
+		<input type="reset" value="Done">
 	   <div>
 	 </div>
 	    </div>
@@ -187,6 +190,9 @@
         <p>Copyright &copy; Your Website 2018</p>
       </div>
     </footer>
+
+    <div id="snackbar"></div>
+
 
     <!-- Jquery -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

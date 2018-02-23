@@ -31,7 +31,72 @@
          });
      });
 
+  //Reset
+     $("input[type='reset']").click(function(){
+	$("#input_label").val('');
+	location.reload();
+     });
 
+  //Submit
+     $('form').on('submit',function(e){
+	e.preventDefault();
+	e.stopPropagation();
+	var label = $('#input_label').val();
+	document.getElementById("input_label").disabled = true;
+	 $.ajax({
+		type: "POST",
+		url: "insert.php",
+		dataType:"json",
+		data: {text:label},
+		success: function (response){
+			console.log("In success");
+			if(response.data1 != null){
+				console.log("In success");
+				$(".switch").show();
+				$("input[type='reset']").show();
+			}
+			else{
+				if(confirm("Record already Present!! Do you want to continue??")){
+					document.getElementById("input_label").disabled = false;
+					$("#input_label").val('');
+				}
+				
+				console.log("In else");
+			}
+		}
+	   });
+	   return false;
+     });
+  //Toggle
+     $('input[type="checkbox"]').click(function(){
+	if ($(this).is(':checked')){
+	   console.log("Checked!!");
+	   $.ajax({
+		url: "record.php",
+		dataType:"json",
+		success: function (response){
+			var x = document.getElementById("snackbar");
+			x.innerText = "Recording started successfully!!";
+    			x.className = "show";
+    			setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+			console.log(response.last_id);
+		}
+	   });
+	}
+	else{
+		$.ajax({
+		url: "stopRecord.php",
+		dataType:"json",
+		success: function (response){
+			var x = document.getElementById("snackbar");
+			x.innerText = "Recording stoped!!";
+    			x.className = "show";
+    			setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+			console.log(response.last_id);
+		}
+	   });
+	}
+     });
 
 
   // Smooth scrolling using jQuery easing
