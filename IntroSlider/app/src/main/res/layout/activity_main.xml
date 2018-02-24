@@ -40,6 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/play_again" />
+
+
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
