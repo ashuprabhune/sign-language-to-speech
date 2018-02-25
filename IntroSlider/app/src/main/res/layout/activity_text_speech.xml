@@ -5,24 +5,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".TextSpeechActivity">
 
-    <Button
-        android:id="@+id/btn_speak"
-        android:layout_width="wrap_content"
+
+    <ImageButton
+        android:id="@+id/btn_Speak"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="94dp"
-        android:text="Speak" />
-
-
-    <Button
-        android:id="@+id/btn_stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_speak"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="94dp"
-        android:text="STOP" />
-
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="55dp"
+        android:layout_marginStart="55dp"
+        android:background="@null"
+        android:src="@drawable/sound2" />
 </android.widget.RelativeLayout>

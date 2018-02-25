@@ -44,7 +44,10 @@ public class HttpApiRequestAsync extends AsyncTask<String, Void, String> {
             int i = 0;
             HttpURLConnection conn = null;
 
-            while (TextSpeechActivity.FLAG.get()){
+            while (true){
+                if(isCancelled()){
+                    break;
+                }
                 conn = (HttpURLConnection) url.openConnection();
                 Log.d("HttpApiRequestAsync", "" + conn.getResponseCode());
                 if (conn.getResponseCode() != 200) {
