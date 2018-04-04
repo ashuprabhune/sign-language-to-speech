@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -23,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TextSpeechActivity extends AppCompatActivity {
     ImageButton speakButton,stopButton;
     TextToSpeech t1;
+    EditText hostip;
 
     TextConverter tc;
     public static final BlockingQueue<String> DATA_STORE = new ArrayBlockingQueue<String>(100);
@@ -38,6 +41,7 @@ public class TextSpeechActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_speech);
         speakButton = (ImageButton) findViewById(R.id.btn_Speak);
+        hostip = (EditText) findViewById(R.id.hostPort);
         //stopButton = (Button) findViewById(R.id.btn_stop);
 
 
@@ -60,39 +64,46 @@ public class TextSpeechActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //String toSpeak = ed1.getText().toString()
-                FLAG.set(true);
-                int i = 0;
-                if(asyncRequest==null)
-                    asyncRequest = new HttpApiRequestAsync(getApplicationContext());
+                String ip = hostip.getText().toString().trim();
+                if(ip == null || ip.equals("")){
+                    Toast.makeText(getApplicationContext(),"No host/IP entered" , Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(),ip , Toast.LENGTH_SHORT).show();
+                    FLAG.set(true);
+                    int i = 0;
+                    if (asyncRequest == null)
+                        asyncRequest = new HttpApiRequestAsync(getApplicationContext());
 
-                asyncRequest.execute("http://10.88.247.131:8080/bitsplease/gesture");
+                    asyncRequest.execute("http://" + ip + "/bitsplease/gesture");
 
-                        String toSpeak = null;
-                        tc = new TextConverter(getApplicationContext());
-                        try {
-                            while (FLAG.get()) {
+                    String toSpeak = null;
+                    tc = new TextConverter(getApplicationContext());
+                    try {
+                        while (FLAG.get()) {
 
-                                toSpeak = DATA_STORE.poll(1, TimeUnit.SECONDS);
-                                if (toSpeak != null && toSpeak.trim() != "") {
-                                    Log.d("HttpApiRequestAsync", toSpeak);
-                                    tc.convertTextToSpeech(t1, toSpeak);
-                                    lastActiveTime = System.currentTimeMillis();
-                                } else {
-                                    Log.d("HttpApiRequestAsync", "no data found");
-                                    if(System.currentTimeMillis() - lastActiveTime > 30000){
-                                        FLAG.set(false);
-                                        asyncRequest.cancel(true);
-                                        asyncRequest = null;
-                                    }
+                            toSpeak = DATA_STORE.poll(1, TimeUnit.SECONDS);
+                            if (toSpeak != null && toSpeak.trim() != "") {
+                                Log.d("HttpApiRequestAsync", toSpeak);
+                                tc.convertTextToSpeech(t1, toSpeak);
+                                lastActiveTime = System.currentTimeMillis();
+                            } else {
+                                Log.d("HttpApiRequestAsync", "no data found");
+                                if (System.currentTimeMillis() - lastActiveTime > 30000) {
+                                    FLAG.set(false);
+                                    asyncRequest.cancel(true);
+                                    asyncRequest = null;
                                 }
                             }
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
                         }
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+                }
 
                 //speechThread.start();
+            }
 
         });
 

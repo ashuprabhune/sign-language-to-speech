@@ -9,6 +9,7 @@
     tools:context=".TextSpeechActivity">
 
 
+
     <ImageButton
         android:id="@+id/btn_Speak"
         android:layout_width="250dp"
@@ -20,4 +21,16 @@
         android:layout_marginStart="55dp"
         android:background="@null"
         android:src="@drawable/sound2" />
+
+    <EditText
+        android:id="@+id/hostPort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_Speak"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textEmailAddress" />
+
+
 </android.widget.RelativeLayout>

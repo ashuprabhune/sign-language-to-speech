@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IntroSlider.iml" filepath="$PROJECT_DIR$/IntroSlider.iml" />
+      <module fileurl="file://E:\semi-colons\sign-language-to-speech\IntroSlider\IntroSlider.iml" filepath="E:\semi-colons\sign-language-to-speech\IntroSlider\IntroSlider.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://E:\semi-colons\sign-language-to-speech\IntroSlider\app\app.iml" filepath="E:\semi-colons\sign-language-to-speech\IntroSlider\app\app.iml" />
     </modules>
   </component>
 </project>
