@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+@Path("/")
 public class Service {
 
 	private static String FILE_NAME = "fileLocation.txt";
@@ -36,14 +37,14 @@ public class Service {
 	}
 
 	@GET
-	@Path("/get")
+	@Path("/gesture")
 	public Response print() throws FileNotFoundException {
 
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
 			File file1 = new File(classLoader.getResource(FILE_NAME).getFile());
 			Scanner sc1 = new Scanner(file1);
-			String file_path=sc1.nextLine();
+			String file_path = sc1.nextLine();
 			Scanner sc = new Scanner(new File(file_path));
 			String line = null;
 			if (sc.hasNextLine()) {
